@@ -191,7 +191,7 @@ func (this *PakMD5) writeReslist() {
 	if err != nil {
 		LogError("Read Json Data Error!", err)
 	}
-	err = writeFile(Bytes, fmt.Sprintf("%s/reslist_srv.json", this.path))
+	err = writeFile(Bytes, fmt.Sprintf("%s/reslist_srv_test.json", this.path))
 	if err != nil {
 		LogError("Write reslist.json Error!", err)
 	}
