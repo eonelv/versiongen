@@ -16,6 +16,7 @@ import (
 	simplejson "github.com/bitly/go-simplejson"
 )
 
+var totalSize int64
 var cppSize int64
 var pdbSize int64
 
@@ -93,7 +94,7 @@ func (this *MD5Task) WriteToChannel(SrcFileDir string) {
 			filetime := fi.ModTime().UnixNano()
 			RelName := string(Name[strings.Count(this.path, ""):])
 			filetimeJson := utils.GetInt(this.LocalFileTime, RelName)
-
+			totalSize += fi.Size()
 			//根据时间对比文件是否改变, 如果时间不变,不计算MD5
 			if filetime == filetimeJson {
 				this.channel <- &SFileInfo{"", 0, 0}
@@ -112,7 +113,7 @@ func (this *MD5Task) WriteToChannel(SrcFileDir string) {
 			if isPdbFile {
 				pdbSize += fi.Size()
 			}
-			if isSourceFile || isPdbFile || isReslistFile {
+			if isSourceFile || isReslistFile {
 				this.channel <- &SFileInfo{"", 0, 0}
 				continue
 			}
@@ -166,7 +167,7 @@ func (this *PakMD5) CalcMD5(path string) {
 
 	completeChan <- true
 	LogInfo("**********Calc MD5 Complete**********")
-	LogInfo("CPP size:", cppSize/1024/1024, "PDB size:", pdbSize/1024/1024)
+	LogInfo("total size:", totalSize/1024/1024, "CPP size:", cppSize/1024/1024, "PDB size:", pdbSize/1024/1024)
 
 	this.writeReslist()
 	this.writeTimeJson()
